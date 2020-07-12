@@ -1,123 +1,124 @@
-;(function init(time) {
-	let container = document.querySelector('#carousel')
-	let controlsContainer = document.querySelector('.controls')
-	let indicatorsContainer = document.querySelector('.indicators')
-	let indicator = document.querySelectorAll('.indicator')
-	let slides = document.querySelectorAll('.slide')
-	let pausePlayBtn = document.querySelector('#pause')
-	let nextBtn = document.querySelector('#next')
-	let prevBtn = document.querySelector('#previous')
+function Carousel() {
+	this.container = document.querySelector('#carousel')
+	this.controlsContainer = document.querySelector('.controls')
+	this.indicatorsContainer = document.querySelector('.indicators')
+	this.indicator = document.querySelectorAll('.indicator')
+	this.slides = document.querySelectorAll('.slide')
+	this.pausePlayBtn = document.querySelector('#pause')
+	this.nextBtn = document.querySelector('#next')
+	this.prevBtn = document.querySelector('#previous')
 
-	let interval = time
-	let currentSlide = 0
-	let timerId = null
-	let isPlaying = true
-	let slideLength = slides.length
-	let swipeStartX = null
-	let swipeEndX = null
+	this.interval = 2000
+	this.currentSlide = 0
+	this.timerId = null
+	this.isPlaying = true
+	this.slideLength = this.slides.length
+	this.swipeStartX = null
+	this.swipeEndX = null
 
-	const LEFT_ARROW = 'ArrowLeft'
-	const RIGHT_ARROW = 'ArrowRight'
-	const SPACE = ' '
-	const FA_PAUSE = 'Pause'
-	const FA_PlAY = 'Play'
+	this.LEFT_ARROW = 'ArrowLeft'
+	this.RIGHT_ARROW = 'ArrowRight'
+	this.SPACE = ' '
+	this.FA_PAUSE = 'Pause'
+	this.FA_PlAY = 'Play'
+}
 
-	function gotoNth(n) {
-		slides[currentSlide].classList.toggle('active')
-		indicator[currentSlide].classList.toggle('active')
-		currentSlide = (n + slideLength) % slideLength
-		slides[currentSlide].classList.toggle('active')
-		indicator[currentSlide].classList.toggle('active')
+Carousel.prototype.gotoNth = function (n) {
+	this.slides[this.currentSlide].classList.toggle('active')
+	this.indicator[this.currentSlide].classList.toggle('active')
+	this.currentSlide = (n + this.slideLength) % this.slideLength
+	this.slides[this.currentSlide].classList.toggle('active')
+	this.indicator[this.currentSlide].classList.toggle('active')
+}
+
+Carousel.prototype.gotoNext = function () {
+	this.gotoNth(this.currentSlide + 1)
+}
+
+Carousel.prototype.gotoPrev = function () {
+	this.gotoNth(this.currentSlide - 1)
+}
+
+Carousel.prototype.play = function () {
+	this.timerId = setInterval(this.gotoNext, this.interval)
+	this.pausePlayBtn.innerHTML = this.FA_PAUSE
+	this.isPlaying = !this.isPlaying
+}
+
+Carousel.prototype.pause = function () {
+	if (this.isPlaying) {
+		clearInterval(this.timerId)
+		this.pausePlayBtn.innerHTML = this.FA_PlAY
+		this.isPlaying = !this.isPlaying
 	}
+}
 
-	function gotoNext() {
-		gotoNth(currentSlide + 1)
+Carousel.prototype.pausePlay = function () {
+	if (this.isPlaying) this.pause()
+	else this.play()
+}
+
+Carousel.prototype.next = function () {
+	this.pause()
+	this.gotoNext()
+}
+
+Carousel.prototype.prev = function () {
+	this.pause()
+	this.gotoPrev()
+}
+
+Carousel.prototype.indicate = function (e) {
+	let target = e.target
+	if (target.classList.contains('indicator')) {
+		this.pause()
+		this.gotoNth(+target.getAttribute('data-slide-to'))
 	}
+}
 
-	function gotoPrev() {
-		gotoNth(currentSlide - 1)
+Carousel.prototype.pressKey = function (e) {
+	switch (e.key) {
+		case this.LEFT_ARROW:
+			this.prev()
+			break
+		case this.RIGHT_ARROW:
+			this.next()
+			break
+		case this.SPACE:
+			this.pausePlay()
+			break
 	}
+}
 
-	function play() {
-		timerId = setInterval(gotoNext, interval)
-		pausePlayBtn.innerHTML = 'Pause'
-		isPlaying = !isPlaying
-	}
+Carousel.prototype.swipeStart = function (e) {
+	this.swipeStartX = e.changedTouches[0].pageX
+}
 
-	function pause() {
-		if (isPlaying) {
-			clearInterval(timerId)
-			pausePlayBtn.innerHTML = 'Play'
-			isPlaying = !isPlaying
-		}
-	}
+Carousel.prototype.swipeEnd = function (e) {
+	this.swipeEndX = e.changedTouches[0].pageX
 
-	function pausePlay() {
-		if (isPlaying) pause()
-		else play()
-	}
+	this.swipeStartX - this.swipeEndX < -100 && this.prev()
+	this.swipeStartX - this.swipeEndX > 100 && this.next()
+}
 
-	function next() {
-		pause()
-		gotoNext()
-	}
+Carousel.prototype.setListeners = function () {
+	this.pausePlayBtn.addEventListener('click', this.pausePlay.bind(this))
+	this.nextBtn.addEventListener('click', this.next.bind(this))
+	this.prevBtn.addEventListener('click', this.prev.bind(this))
+	this.indicatorsContainer.addEventListener('click', this.indicate.bind(this))
+	document.addEventListener('keydown', this.pressKey.bind(this))
+	this.container.addEventListener('touchstart', this.swipeStart.bind(this))
+	this.container.addEventListener('touchend', this.swipeEnd.bind(this))
+}
 
-	function prev() {
-		pause()
-		gotoPrev()
-	}
+Carousel.prototype.init = function () {
+	this.controlsContainer.style.display = 'block'
+	this.indicatorsContainer.style.display = 'block'
+	this.setListeners()
+	this.timerId = setInterval(() => {
+		this.gotoNext()
+	}, this.interval)
+}
 
-	function indicate(e) {
-		let target = e.target
-		if (target.classList.contains('indicator')) {
-			pause()
-			gotoNth(+target.getAttribute('data-slide-to'))
-		}
-	}
-
-	function pressKey(e) {
-		switch (e.key) {
-			case LEFT_ARROW:
-				prev()
-				break
-			case RIGHT_ARROW:
-				next()
-				break
-			case SPACE:
-				pausePlay()
-				break
-		}
-	}
-
-	function swipeStart(e) {
-		swipeStartX = e.changedTouches[0].pageX
-	}
-
-	function swipeEnd(e) {
-		swipeEndX = e.changedTouches[0].pageX
-
-		swipeStartX - swipeEndX < -100 && prev()
-		swipeStartX - swipeEndX > 100 && next()
-	}
-
-	function setListeners() {
-		pausePlayBtn.addEventListener('click', pausePlay)
-		nextBtn.addEventListener('click', next)
-		prevBtn.addEventListener('click', prev)
-		indicatorsContainer.addEventListener('click', indicate)
-		document.addEventListener('keydown', pressKey)
-		container.addEventListener('touchstart', swipeStart)
-		container.addEventListener('touchend', swipeEnd)
-	}
-
-	function init() {
-		controlsContainer.style.display = 'block'
-		indicatorsContainer.style.display = 'block'
-
-		setListeners()
-
-		timerId = setInterval(gotoNext, interval)
-	}
-
-	init()
-})()
+let carousel = new Carousel()
+carousel.init()
