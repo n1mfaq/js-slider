@@ -22,5 +22,8 @@
     "lint-staged": "^10.2.11",
     "prettier": "^2.0.5",
     "sort-css-media-queries": "^1.5.0"
+  },
+  "dependencies": {
+    "uuid": "^8.2.0"
   }
 }
