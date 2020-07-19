@@ -1,0 +1,31 @@
+*
+{
+    box-sizing: border-box;
+}
+
+html
+{
+    font-family: $font-main;
+    font-size: 16px;
+}
+
+body
+{
+    margin: 0;
+}
+
+.fa-angle-left,
+.fa-angle-right
+{
+    font-size: 35px;
+
+    color: $color-indi;
+}
+
+.fa-play-circle,
+.fa-pause-circle
+{
+    font-size: 40vh;
+
+    color: rgba($color-indi, .4);
+}

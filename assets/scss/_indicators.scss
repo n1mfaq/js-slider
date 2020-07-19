@@ -1,0 +1,53 @@
+.indicators
+{
+    position: absolute;
+    z-index: 15;
+    right: 0;
+    bottom: 10px;
+    left: 0;
+
+    display: flex;
+
+    margin-top: 0;
+    margin-right: 15%;
+    margin-bottom: 0;
+    margin-left: 15%;
+    padding-left: 0;
+
+    list-style: none;
+
+    justify-content: center;
+}
+
+.indicator
+{
+    box-sizing: content-box;
+    width: 30px;
+    height: 4px;
+    margin-right: 3px;
+    margin-left: 3px;
+
+    cursor: pointer;
+    text-indent: -999px;
+
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+    background-color: rgb(209, 28, 28);
+    background-clip: padding-box;
+
+    flex: 0 1 auto;
+    @include lg-min
+    {
+        cursor: pointer;
+    }
+
+    &:hover
+    {
+        cursor: pointer;
+    }
+
+    &.active
+    {
+        background-color: $color-indi;
+    }
+}
