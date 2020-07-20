@@ -46,7 +46,7 @@
             transition: opacity 1s ease-in .5s;
 
             opacity: 1;
-            text-shadow: 0 0 30px rgba($color-indi, .3);
+            text-shadow: 0 0 30px rgba($color-light, .3);
         }
     }
 
@@ -78,7 +78,7 @@
         &:hover,
         &:focus
         {
-            color: $color-indi;
+            color: $color-light;
             background: linear-gradient(to left, rgba($color-dark, 0.8), rgba($color-dark, 0));
             text-shadow: 0 0 10px $color-light;
         }
